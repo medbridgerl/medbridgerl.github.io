@@ -82,7 +82,8 @@
             <div class="column has-text-centered">
               <div class="publication-links">
                 <span class="link-block">
-                  <a href="" class="external-link button is-normal is-rounded is-dark" target="_blank">
+                  <a href="https://arxiv.org/abs/2603.01301" class="external-link button is-normal is-rounded is-dark"
+                    target="_blank">
                     <span class="icon">
                       <i class="ai ai-arxiv"></i>
                     </span>
@@ -92,7 +93,8 @@
 
                 <!-- Code Link. -->
                 <span class="link-block">
-                  <a href="" class="external-link button is-normal is-rounded is-dark" target="_blank">
+                  <a href="https://github.com/armenjeddi/medbridgerl"
+                    class="external-link button is-normal is-rounded is-dark" target="_blank">
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
@@ -102,7 +104,8 @@
 
                 <!-- HF Models -->
                 <span class="link-block">
-                  <a href="" class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener">
+                  <a href="https://huggingface.co/armenjeddi/MedBridgeRL-OctoMed-7B-PMC-VQA-RL"
+                    class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener">
                     <span class="icon">
                       <img src="./static/images/hf-logo.svg" alt="Hugging Face" class="hf-icon">
                     </span>
@@ -124,11 +127,13 @@
 
         <!-- Teaser image -->
         <figure class="image">
-          <img src="" alt="MedBridgeRL">
+          <img src="static/images/teaser.png" alt="MedBridgeRL">
         </figure>
 
         <h2 class="subtitle has-text-centered" style="margin-top: 1.25rem;">
-          Text to be added
+          <span class="dnerf">MedBridgeRL</span> studies when RL post-training helps medical VLMs by measuring support
+          with Pass@K, bridging low-support regimes with targeted SFT, and then applying GRPO-style RL to sharpen
+          outputs and improve Acc@1 and sampling efficiency.
         </h2>
       </div>
     </div>
@@ -151,23 +156,36 @@
       <div class="is-centered has-text-centered">
         <div class="column">
           <div class="content has-text-justified" style="margin-top: 1rem;">
+
             <p>
-              Text to be added
+              Reinforcement learning (RL) is increasingly used to post-train medical vision-language models (VLMs), but
+              it is
+              still unclear <em>when</em> RL helps and whether it improves medical reasoning or mostly
+              <em>sharpens</em> behaviors already present in the base model.
+              In practice, some RL checkpoints improve accuracy on a subset of benchmarks, while others fail to transfer
+              across modalities or even reduce the model’s latent capability.
             </p>
 
             <p>
-              Text to be added
+              We introduce <strong>MedBridgRL</strong>, a <em>boundary-aware</em> framework that studies and
+              operationalizes
+              this question through the lens of <span class="math">Pass@K</span>.
+              MedBridgRL measures a model’s <em>support</em> (latent capability) using
+              <span class="math">Pass@K</span>, compares it to greedy accuracy (<span class="math">Acc@1</span>), and
+              uses their gap to diagnose whether the model is limited by weak support or by poor sampling efficiency.
             </p>
 
-
-            <div class="has-text-centered">
-
-              <figure class="image body-image">
-                <img src="" alt="MedBridgeRL">
-              </figure>
-
-            </div>
-
+            <p>
+              The resulting recipe is simple: (1) if support is low, <em>bridge</em> the distribution with targeted
+              medical
+              data (SFT or task/modality-proximal training) to raise <span class="math">Pass@K</span>; then (2) once
+              support
+              is sufficient, apply GRPO-style RL to <em>sharpen</em> the distribution and improve
+              <span class="math">Acc@1</span> and sampling efficiency.
+              We validate this recipe by RL post-training an OctoMed-initialized model on a small, balanced PMC-style
+              MCQ set
+              and evaluating across multiple medical VQA benchmarks.
+            </p>
 
           </div>
         </div>
@@ -177,11 +195,21 @@
 
 
 
+
+
+
   <section class="section" id="BibTeX">
     <div class="container is-max-desktop content">
       <h2 class="title">BibTeX</h2>
-      <pre><code>@misc{ 
-      }
+      <pre><code>@misc{jeddi2026doesrlhelpmedical,
+        title={When Does RL Help Medical VLMs? Disentangling Vision, SFT, and RL Gains}, 
+        author={Ahmadreza Jeddi and Kimia Shaban and Negin Baghbanzadeh and Natasha Sharan and Abhishek Moturu and Elham Dolatabadi and Babak Taati},
+        year={2026},
+        eprint={2603.01301},
+        archivePrefix={arXiv},
+        primaryClass={cs.CV},
+        url={https://arxiv.org/abs/2603.01301}, 
+  }
       </code></pre>
     </div>
   </section>
