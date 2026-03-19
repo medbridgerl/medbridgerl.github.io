@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="description"
-    content="Boundary-aware RL post-training for medical VLMs: measure support with Pass@K, bridge weak regimes with SFT, then sharpen with GRPO to boost accuracy and reliability.">
-  <meta name="keywords" content="VLM, Medical, Reinforcement Learning, Post-training, Reasoning">
+    content="When Does RL Help Medical VLMs? MedBridgeRL studies when reinforcement learning helps medical vision-language models by separating support expansion from distribution sharpening.">
+  <meta name="keywords" content="MedBridgeRL, Medical VLMs, Reinforcement Learning, Pass@K, GRPO, SFT">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="MedBridgeRL | When Does RL Help Medical VLMs?">
+  <meta property="og:description"
+    content="A boundary-aware recipe for deciding when to bridge support with SFT and when to prioritize RL in medical VLMs.">
+  <meta property="og:type" content="website">
   <title>MedBridgeRL</title>
-
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PGBPKEZJ5N"></script>
@@ -16,13 +19,12 @@
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'G-PGBPKEZJ5N');
   </script>
 
-
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
@@ -39,198 +41,290 @@
 </head>
 
 <body>
+  <nav class="topbar">
+    <div class="container is-max-desktop topbar-inner">
+      <a class="brand" href="#top">MedBridgeRL</a>
+      <div class="topbar-links">
+        <a href="#overview">Overview</a>
+        <a href="#framework">Framework</a>
+        <a href="#recipe">Recipe</a>
+        <a href="#bibtex">BibTeX</a>
+      </div>
+    </div>
+  </nav>
 
-
-  <section class="hero">
+  <section class="hero hero-medbridge" id="top">
     <div class="hero-body">
       <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">When Does RL Help Medical VLMs? Disentangling Vision, SFT, and RL
-              Gains</h1>
-            <div class="is-size-5 publication-authors">
-              <span class="author-block">
-                <a href="https://armenjeddi.github.io/" target="_blank">Ahmadreza Jeddi</a><sup>1,2,3,*</sup>,</span>
-
-              <span class="author-block">
-                <a href="https://kimiashaban.github.io/" target="_blank">Kimia Shaban</a><sup>1,2,3,*</sup>,</span>
-
-              <span class="author-block">
-                <a href="" target="_blank">Negin Baghbanzadeh</a><sup>2,4,*</sup>,</span>
-
-              <span class="author-block">
-                <a href="" target="_blank">Natasha Sharan</a><sup>1</sup>,</span>
-
-              <span class="author-block">
-                <a href="" target="_blank">Abhishek Moturu</a><sup>1,2,3</sup>,</span>
-
-              <span class="author-block">
-                <a href="" target="_blank">Elham Dolatabadi</a><sup>2,4</sup>,</span>
-
-              <span class="author-block">
-                <a href="https://www.cs.toronto.edu/~taati/" target="_blank">Babak Taati</a><sup>1,2,3</sup></span>
-
+        <div class="hero-shell">
+          <div class="hero-copy has-text-centered">
+            <div class="eyebrow-row">
+              <span class="eyebrow-pill accent-pill">Medical VLM post-training</span>
+              <span class="eyebrow-pill muted-pill">Pass@K diagnostics</span>
+              <span class="eyebrow-pill muted-pill">Boundary-aware RL</span>
             </div>
 
+            <h1 class="title publication-title">
+              When Does RL Help Medical VLMs? Disentangling Vision, SFT, and RL Gains
+            </h1>
+
+            <p class="hero-summary">
+              <strong>MedBridgeRL</strong> studies when RL genuinely helps medical vision-language models: first measure support with
+              Pass@K, then decide whether to <em>bridge</em> weak regimes with targeted supervised data or <em>sharpen</em>
+              already-supported behavior with RL.
+            </p>
+
             <div class="is-size-5 publication-authors">
-              <span class="author-block"><sup>1</sup>University of Toronto,</span>
-              <span class="author-block"><sup>2</sup>Vector Institute,</span>
+              <span class="author-block">
+                <a href="https://armenjeddi.github.io/" target="_blank" rel="noopener">Ahmadreza Jeddi</a><sup>1,2,3,*</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://kimiashaban.github.io/" target="_blank" rel="noopener">Kimia Shaban</a><sup>1,2,3,*</sup>,
+              </span>
+              <span class="author-block">Negin Baghbanzadeh<sup>2,4,*</sup>,</span>
+              <span class="author-block">Natasha Sharan<sup>1</sup>,</span>
+              <span class="author-block">Abhishek Moturu<sup>1,2,3</sup>,</span>
+              <span class="author-block">Elham Dolatabadi<sup>2,4</sup>,</span>
+              <span class="author-block">
+                <a href="https://www.cs.toronto.edu/~taati/" target="_blank" rel="noopener">Babak Taati</a><sup>1,2,3</sup>
+              </span>
+            </div>
+
+            <div class="is-size-6 publication-affiliations">
+              <span class="author-block"><sup>1</sup>University of Toronto</span>
+              <span class="dot-sep">•</span>
+              <span class="author-block"><sup>2</sup>Vector Institute</span>
+              <span class="dot-sep">•</span>
               <span class="author-block"><sup>3</sup>University Health Network</span>
+              <span class="dot-sep">•</span>
               <span class="author-block"><sup>4</sup>York University, Canada</span>
             </div>
 
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <span class="link-block">
-                  <a href="https://arxiv.org/abs/2603.01301" class="external-link button is-normal is-rounded is-dark"
-                    target="_blank">
-                    <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                    </span>
-                    <span>Paper</span>
-                  </a>
-                </span>
+            <div class="publication-links hero-actions">
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2603.01301" class="external-link button action-button is-rounded"
+                  target="_blank" rel="noopener">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/armenjeddi/medbridgerl"
+                  class="external-link button action-button is-rounded" target="_blank" rel="noopener">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/armenjeddi/MedBridgeRL-OctoMed-7B-PMC-VQA-RL"
+                  class="external-link button action-button is-rounded" target="_blank" rel="noopener">
+                  <span class="icon"><img src="./static/images/hf-logo.svg" alt="Hugging Face" class="hf-icon"></span>
+                  <span>Models</span>
+                </a>
+              </span>
+            </div>
+          </div>
 
-                <!-- Code Link. -->
-                <span class="link-block">
-                  <a href="https://github.com/armenjeddi/medbridgerl"
-                    class="external-link button is-normal is-rounded is-dark" target="_blank">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code</span>
-                  </a>
-                </span>
+          <div class="hero-figure-card">
+            <div class="hero-figure-header">
+              <div>
+                <p class="card-kicker">Framework at a glance</p>
+                <h2 class="figure-title">Measure support first, then choose the right post-training move</h2>
+              </div>
+            </div>
 
-                <!-- HF Models -->
-                <span class="link-block">
-                  <a href="https://huggingface.co/armenjeddi/MedBridgeRL-OctoMed-7B-PMC-VQA-RL"
-                    class="external-link button is-normal is-rounded is-dark" target="_blank" rel="noopener">
-                    <span class="icon">
-                      <img src="./static/images/hf-logo.svg" alt="Hugging Face" class="hf-icon">
-                    </span>
-                    <span>Models</span>
-                  </a>
-                </span>
+            <figure class="image hero-image-wrap">
+              <img src="./static/images/teaser.png" alt="MedBridgeRL framework overview">
+            </figure>
 
-
+            <div class="mini-feature-grid four-up">
+              <div class="mini-feature-card">
+                <h3>Assess support</h3>
+                <p>Use <span class="math">Pass@K</span> to estimate the model's latent capability rather than judging it only by greedy decoding.</p>
+              </div>
+              <div class="mini-feature-card">
+                <h3>Compare to Acc@1</h3>
+                <p>The gap between support and default behavior reveals whether the model lacks capability or just samples poorly.</p>
+              </div>
+              <div class="mini-feature-card">
+                <h3>Bridge weak regimes</h3>
+                <p>When support is low, targeted medical SFT expands what the model can already reach.</p>
+              </div>
+              <div class="mini-feature-card">
+                <h3>Sharpen with RL</h3>
+                <p>When support is already present, RL improves sampling efficiency and pushes good answers toward the top.</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
   </section>
 
-  <section class="hero teaser">
+  <section class="section compact-section" id="overview">
     <div class="container is-max-desktop">
-      <div class="hero-body has-text-centered">
+      <div class="section-heading has-text-centered">
+        <p class="section-kicker">Overview</p>
+        <h2 class="title is-2">What MedBridgeRL is asking</h2>
+      </div>
 
-        <!-- Teaser image -->
-        <figure class="image">
-          <img src="static/images/teaser.png" alt="MedBridgeRL">
+      <div class="cards-grid cards-grid-three">
+        <article class="feature-card">
+          <div class="feature-icon"><i class="fas fa-stethoscope"></i></div>
+          <h3>Does RL improve reasoning?</h3>
+          <p>Medical RL post-training often helps on some benchmarks but can fail to transfer, or even hurt latent capability, across others.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+          <h3>Support vs. behavior</h3>
+          <p>Greedy accuracy alone hides whether a model knows the answer somewhere in its distribution or never reaches it at all.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon"><i class="fas fa-route"></i></div>
+          <h3>A practical recipe</h3>
+          <p>The paper turns this diagnosis into a simple decision rule: bridge with SFT when support is weak, prioritize RL when support is sufficient.</p>
+        </article>
+      </div>
+
+      <div class="content-card prose-card">
+        <div class="content has-text-justified paper-prose">
+          <p>
+            Reinforcement learning is increasingly used to post-train medical vision-language models, yet it is still unclear
+            <em>when</em> it truly helps. A gain in greedy accuracy might reflect better reasoning, better sampling, or simply better alignment to a narrow benchmark.
+          </p>
+
+          <p>
+            <strong>MedBridgeRL</strong> separates these effects through the lens of <span class="math">Pass@K</span> versus <span class="math">Acc@1</span>.
+            Support tells us whether correct answers are already present in the model's distribution, while default behavior tells us whether the model can surface them reliably.
+          </p>
+
+          <p>
+            This view leads to a boundary-aware strategy: use task- or modality-proximal supervision to <em>expand support</em> when it is low;
+            once support is already non-trivial, use RL to <em>sharpen</em> the distribution and improve top-1 performance and sampling efficiency.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt-section" id="framework">
+    <div class="container is-max-desktop">
+      <div class="section-heading has-text-centered">
+        <p class="section-kicker">Framework</p>
+        <h2 class="title is-2">From measurement to decision</h2>
+      </div>
+
+      <div class="content-card split-card">
+        <div class="split-copy">
+          <h3>Step 1: quantify support</h3>
+          <p>
+            MedBridgeRL starts by asking a sharper question than “what is the greedy answer?” It samples multiple reasoning traces,
+            measures whether the correct answer appears anywhere among them, and treats that as <span class="math">Pass@K</span> support.
+          </p>
+          <ul>
+            <li><strong>High Pass@K, low Acc@1:</strong> the model often knows the answer but does not reliably choose it first.</li>
+            <li><strong>Low Pass@K:</strong> the answer is rarely in the distribution at all, so RL has little to sharpen.</li>
+            <li><strong>Practical implication:</strong> measure before optimizing, or post-training may target the wrong bottleneck.</li>
+          </ul>
+        </div>
+
+        <figure class="image framed-figure split-figure">
+          <img src="./static/images/measurement.png" alt="MedBridgeRL measurement panel showing Pass@K and Acc@1">
+          <figcaption>
+            Support is estimated with sampled traces and compared against greedy behavior, revealing whether the limitation is capability or sampling.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section compact-section" id="recipe">
+    <div class="container is-max-desktop">
+      <div class="section-heading has-text-centered">
+        <p class="section-kicker">Boundary-aware recipe</p>
+        <h2 class="title is-2">Bridge first, then sharpen</h2>
+      </div>
+
+      <div class="content-card split-card reverse-split">
+        <figure class="image framed-figure split-figure">
+          <img src="./static/images/right_recipe.png" alt="MedBridgeRL thresholding support and choosing between SFT and RL">
+          <figcaption>
+            The thresholded support view turns RL post-training into a regime-selection problem instead of a one-size-fits-all recipe.
+          </figcaption>
         </figure>
 
-        <h2 class="subtitle has-text-centered" style="margin-top: 1.25rem;">
-          <span class="dnerf">MedBridgeRL</span> studies when RL post-training helps medical VLMs by measuring support
-          with Pass@K, bridging low-support regimes with targeted SFT, and then applying GRPO-style RL to sharpen
-          outputs and improve Acc@1 and sampling efficiency.
-        </h2>
+        <div class="split-copy">
+          <h3>Step 2: choose the right intervention</h3>
+          <p>
+            Once support is measured, the next move becomes much clearer. If the model has weak support, targeted medical SFT can move probability mass toward useful regions.
+            If support is already high, RL is better used to concentrate that mass and improve <span class="math">Acc@1</span>.
+          </p>
+          <ul>
+            <li><strong>Bridge support with SFT:</strong> expand what the model can reach.</li>
+            <li><strong>Sharpen support with RL:</strong> make strong candidates easier to surface.</li>
+            <li><strong>End result:</strong> a more interpretable and more transferable post-training recipe for medical VLMs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cards-grid cards-grid-two">
+        <article class="feature-card emphasis-card">
+          <div class="feature-icon"><i class="fas fa-arrow-trend-up"></i></div>
+          <h3>When support is low</h3>
+          <p>RL alone is unlikely to rescue the model. First use supervision that is close to the task or modality to raise <span class="math">Pass@K</span>.</p>
+        </article>
+        <article class="feature-card emphasis-card">
+          <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
+          <h3>When support is already present</h3>
+          <p>RL becomes effective because it sharpens the distribution, improving top-1 accuracy and sampling efficiency without needing to invent new capability from scratch.</p>
+        </article>
       </div>
     </div>
   </section>
 
-
-  <!-- Overview (~ Abstract & Intro ) -->
-  <section class="hero is-light is-small">
-    <div class="hero-body has-text-centered">
-      <h1 class="title is-2">
-        <span class="">Overview</span>
-      </h1>
-    </div>
-  </section>
-
-
-
-  <section class="section">
+  <section class="section compact-section" id="bibtex">
     <div class="container is-max-desktop">
-      <div class="is-centered has-text-centered">
-        <div class="column">
-          <div class="content has-text-justified" style="margin-top: 1rem;">
-
-            <p>
-              Reinforcement learning (RL) is increasingly used to post-train medical vision-language models (VLMs), but
-              it is
-              still unclear <em>when</em> RL helps and whether it improves medical reasoning or mostly
-              <em>sharpens</em> behaviors already present in the base model.
-              In practice, some RL checkpoints improve accuracy on a subset of benchmarks, while others fail to transfer
-              across modalities or even reduce the model’s latent capability.
-            </p>
-
-            <p>
-              We introduce <strong>MedBridgRL</strong>, a <em>boundary-aware</em> framework that studies and
-              operationalizes
-              this question through the lens of <span class="math">Pass@K</span>.
-              MedBridgRL measures a model’s <em>support</em> (latent capability) using
-              <span class="math">Pass@K</span>, compares it to greedy accuracy (<span class="math">Acc@1</span>), and
-              uses their gap to diagnose whether the model is limited by weak support or by poor sampling efficiency.
-            </p>
-
-            <p>
-              The resulting recipe is simple: (1) if support is low, <em>bridge</em> the distribution with targeted
-              medical
-              data (SFT or task/modality-proximal training) to raise <span class="math">Pass@K</span>; then (2) once
-              support
-              is sufficient, apply GRPO-style RL to <em>sharpen</em> the distribution and improve
-              <span class="math">Acc@1</span> and sampling efficiency.
-              We validate this recipe by RL post-training an OctoMed-initialized model on a small, balanced PMC-style
-              MCQ set
-              and evaluating across multiple medical VQA benchmarks.
-            </p>
-
+      <div class="content-card bibtex-card">
+        <div class="bibtex-header">
+          <div>
+            <p class="section-kicker left-kicker">Citation</p>
+            <h2 class="bibtex-title">BibTeX</h2>
           </div>
+          <button class="button is-rounded bibtex-copy" onclick="copyBibtex()">
+            <span class="icon"><i class="far fa-copy"></i></span>
+            <span id="copy-label">Copy</span>
+          </button>
         </div>
+        <pre><code id="bibtex-block">@misc{jeddi2026doesrlhelpmedical,
+  title={When Does RL Help Medical VLMs? Disentangling Vision, SFT, and RL Gains},
+  author={Ahmadreza Jeddi and Kimia Shaban and Negin Baghbanzadeh and Natasha Sharan and Abhishek Moturu and Elham Dolatabadi and Babak Taati},
+  year={2026},
+  eprint={2603.01301},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2603.01301}
+}</code></pre>
       </div>
     </div>
   </section>
 
-
-
-
-
-
-  <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <h2 class="title">BibTeX</h2>
-      <pre><code>@misc{jeddi2026doesrlhelpmedical,
-        title={When Does RL Help Medical VLMs? Disentangling Vision, SFT, and RL Gains}, 
-        author={Ahmadreza Jeddi and Kimia Shaban and Negin Baghbanzadeh and Natasha Sharan and Abhishek Moturu and Elham Dolatabadi and Babak Taati},
-        year={2026},
-        eprint={2603.01301},
-        archivePrefix={arXiv},
-        primaryClass={cs.CV},
-        url={https://arxiv.org/abs/2603.01301}, 
-  }
-      </code></pre>
-    </div>
-  </section>
-
-
-
-  <footer class="footer">
-    <div class="container">
-
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <div class="content">
-            <p>
-              The website template is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a>.
-            </p>
-          </div>
-        </div>
-      </div>
+  <footer class="footer site-footer">
+    <div class="container is-max-desktop footer-shell">
+      <p>MedBridgeRL project page</p>
+      <p class="template-credit">Template adapted from the NeRFies project website.</p>
     </div>
   </footer>
 
+  <script>
+    function copyBibtex() {
+      const bibtex = document.getElementById('bibtex-block').innerText;
+      const label = document.getElementById('copy-label');
+      navigator.clipboard.writeText(bibtex).then(() => {
+        label.innerText = 'Copied';
+        setTimeout(() => { label.innerText = 'Copy'; }, 1600);
+      });
+    }
+  </script>
 </body>
 
 </html>
